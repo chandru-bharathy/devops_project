@@ -1,0 +1,37 @@
+---
+- name: Install Maven on Jenkins Slave
+  hosts: jenkins-slave
+  become: true
+  tasks:
+    - name: Update Package Cache
+      apt:
+        update_cache: yes
+
+    - name: Install OpenJDK
+      apt:
+        name: openjdk-17-jre
+        state: present
+
+    - name: Download and Extract Maven
+      get_url:
+        url: "https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz"
+        dest: /opt
+
+    - name: Extract Maven Archive
+      unarchive:
+        src: /opt/apache-maven-3.9.4-bin.tar.gz
+        dest: /opt
+        creates: /opt/apache-maven-3.9.4
+        remote_src: yes
+
+    - name: Set Environment Variables for Maven
+      lineinfile:
+        path: /etc/profile
+        line: "export M2_HOME=/opt/apache-maven-3.9.4"
+        insertafter: EOF
+
+    - name: Add Maven bin to PATH
+      lineinfile:
+        path: /etc/profile
+        line: "export PATH=$PATH:$M2_HOME/bin"
+        insertafter: EOF
