@@ -9,29 +9,45 @@
 
     - name: Install OpenJDK
       apt:
-        name: openjdk-17-jre
+        name: openjdk-11-jre
         state: present
 
     - name: Download and Extract Maven
       get_url:
-        url: "https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz"
+        url: "https://dlcdn.apache.org/maven/maven-3/3.9.2/binaries/apache-maven-3.9.2-bin.tar.gz"
         dest: /opt
 
     - name: Extract Maven Archive
       unarchive:
-        src: /opt/apache-maven-3.9.4-bin.tar.gz
+        src: /opt/apache-maven-3.9.2-bin.tar.gz
         dest: /opt
-        creates: /opt/apache-maven-3.9.4
+        creates: /opt/apache-maven-3.9.2
         remote_src: yes
 
     - name: Set Environment Variables for Maven
       lineinfile:
-        path: /etc/profile
-        line: "export M2_HOME=/opt/apache-maven-3.9.4"
+        path: /etc/profile.d/maven.sh
+        line: "export M2_HOME=/opt/apache-maven-3.9.2"
+        create: yes
         insertafter: EOF
 
     - name: Add Maven bin to PATH
       lineinfile:
-        path: /etc/profile
+        path: /etc/profile.d/maven.sh
         line: "export PATH=$PATH:$M2_HOME/bin"
         insertafter: EOF
+        
+
+    - name: Load the updated environment variables
+      command: source /etc/profile.d/maven.sh
+      register: command_result
+      changed_when: false
+
+    - name: Verify Maven installation
+      command: mvn -version
+      register: command_result
+      changed_when: false
+
+    - name: Display command output
+      debug:
+        var: command_result.stdout_lines
