@@ -26,8 +26,20 @@
     
     - name: Docker installation
       apt:
-        name: Docker
+        name: docker.io
         state: present
-        
+
+    - name: start service
+      service: 
+        name: docker
+        state: started
+        enabled: yes
+    
+    - name: give permission to /var/run/docker.sock
+      file: 
+        path: /var/run/docker.sock
+        state: touch
+        mode: 0777
+
 
 
