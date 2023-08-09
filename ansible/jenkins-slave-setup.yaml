@@ -23,31 +23,11 @@
         dest: /opt
         creates: /opt/apache-maven-3.9.4
         remote_src: yes
-
-    - name: Set Environment Variables for Maven
-      lineinfile:
-        path: /etc/profile.d/maven.sh
-        line: "export M2_HOME=/opt/apache-maven-3.9.4"
-        create: yes
-        insertafter: EOF
-
-    - name: Add Maven bin to PATH
-      lineinfile:
-        path: /etc/profile.d/maven.sh
-        line: "export PATH=$PATH:$M2_HOME/bin"
-        insertafter: EOF
+    
+    - name: Docker installation
+      apt:
+        name: Docker
+        state: present
         
 
-    - name: Load the updated environment variables
-      command: source /etc/profile.d/maven.sh
-      register: command_result
-      changed_when: false
 
-    - name: Verify Maven installation
-      command: mvn -version
-      register: command_result
-      changed_when: false
-
-    - name: Display command output
-      debug:
-        var: command_result.stdout_lines
