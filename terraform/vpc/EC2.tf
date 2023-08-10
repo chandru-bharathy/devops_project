@@ -45,6 +45,7 @@ resource "aws_security_group" "app-sg" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
+
   egress {
 
     from_port        = 0
@@ -77,7 +78,7 @@ resource "aws_subnet" "app-public_subnet_02" {
     vpc_id = aws_vpc.app-vpc.id
     cidr_block = "10.1.2.0/24"
     map_public_ip_on_launch = "true"
-    availability_zone = "us-east-1a"
+    availability_zone = "us-east-1b"
     tags = {
       Name = "app-public_subent_02"
     }
@@ -116,7 +117,7 @@ resource "aws_route_table_association" "app-rta-public-subnet-02" {
 }
 
 // add kubernates connection from vpc 
- 
+
  module "sgs" {
     source = "../sg_eks"
     vpc_id     =  aws_vpc.app-vpc.id
